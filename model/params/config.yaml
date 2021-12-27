@@ -1,0 +1,6 @@
+root_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/231221/"
+num_classes: 2
+class_names: ['cat', 'dog']
+mlflow_experiment_name: 'Experiment 1'
+mlflow_run_name: 'Version 1'
+artifact_path: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/artifact"

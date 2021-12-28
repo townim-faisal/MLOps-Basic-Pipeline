@@ -1,0 +1,7 @@
+root_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/231221/"
+warehouse_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse"
+version: "version 1"
+num_classes: 2
+class_names: ['cat', 'dog']
+seed: 123
+train_ratio: 0.8

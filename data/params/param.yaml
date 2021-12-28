@@ -1,4 +1,4 @@
-root_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/231221/"
+lake_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/231221/"
 warehouse_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse"
 version: "version 1"
 num_classes: 2

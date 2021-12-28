@@ -2,6 +2,23 @@
 
 Currently, this repo is following Stage 1. Read [here](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning#mlops_level_1_ml_pipeline_automation).
 
+```bash
+app/                 - application deployment
+└── app.py           - run application
+
+data/                - data pipeline
+├── params           - Parameter
+    └── param.yaml   - parameter file
+├── log              - log folder
+├── figures          - figures folder
+├── notebooks        - jupyter notebooks
+├── eda.py           - exploratory data analysis
+├── preprocess.py    - preprocessing data
+└── validate.py      - validating data
+
+```
+
+
 ## Environment setup
 ```
 virtualenv pipeline-env

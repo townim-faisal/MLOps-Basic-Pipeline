@@ -1,0 +1,31 @@
+{
+    "blur": {
+        "ratio": 0.48392,
+        "num_files": 12098,
+        "total": 25000,
+        "delete_blur_image": false
+    },
+    "duplicate": {
+        "ratio": 0.99996,
+        "num_files": 24999,
+        "total": 25000,
+        "delete_duplicate_image": false,
+        "diff_cutoff": 0.95
+    },
+    "preprocessed": {
+        "num_files": 25000,
+        "dist": {
+            "train": {
+                "cat": 10000,
+                "dog": 10000
+            },
+            "test": {
+                "cat": 2500,
+                "dog": 2500
+            }
+        },
+        "train_folder": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\train",
+        "val_folder": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\val",
+        "data_file": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\data.csv"
+    }
+}

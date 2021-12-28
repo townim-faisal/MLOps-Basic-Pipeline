@@ -18,7 +18,7 @@ ffmpeg
 pytest
 pytest-dependency
 pre-commit
-dvc
+dvc[all]
 apache-airflow
 mlflow>=1.22.0
 pyngrok

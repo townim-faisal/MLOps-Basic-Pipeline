@@ -15,3 +15,5 @@ similarity_threshold: 1.05
 
 # preprocess
 test_ratio: 0.2
+delete_blur_image: False
+delete_duplicate_image: False

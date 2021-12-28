@@ -16,6 +16,10 @@ data/                - data pipeline
 ├── preprocess.py    - preprocessing data
 └── validate.py      - validating data
 
+storage/
+├── artifact         - model 
+├── data-lake        - raw data
+└── data-warehouse   - preprocessed data 
 ```
 
 

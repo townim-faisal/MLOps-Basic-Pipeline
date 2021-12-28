@@ -6,6 +6,7 @@ import os, sys
 import yaml
 import json
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 from validate import parallel_laplacian_variance, parallel_compare_images
 
 
@@ -29,9 +30,9 @@ log['files'] = {
 }
 
 # how much blur image
-# pool = mp.Pool(mp.cpu_count())  
-# pool.close() 
-blurriness = [parallel_laplacian_variance(file) for file in files]
+blurriness = []
+for i, file in tqdm(enumerate(files), total=len(files), desc="Blur: "):
+    blurriness.append(parallel_laplacian_variance(file))
 median_blur = float(np.median(blurriness))
 min_blur = float(np.min(blurriness))
 max_blur = float(np.max(blurriness))
@@ -49,9 +50,11 @@ log['blur'] = {
 
 
 # how much duplicate image
-diff = [parallel_compare_images(i, files) for i in range(len(files)-1)]
+diff = []
+for i in tqdm(range(len(files)-1), total=len(files)-1, desc="Duplicate: "):
+    diff.append(parallel_compare_images(i, files))
 median_diff = float(np.median(diff))
-print('MedianSimilarity Cutoff (OpenCV Compare Images):', median_diff)
+print('Median Similarity Cutoff (OpenCV Compare Images):', median_diff)
 diff_cutoff = median_diff*params['similarity_threshold']
 print('Similarity Cutoff (OpenCV Compare Images):', diff_cutoff)
 
@@ -65,7 +68,7 @@ log['duplicate'] = {
 num_classes = params['num_classes']
 class_names = {name: 0 for name in params['class_names']}
 
-for file in files:
+for i, file in tqdm(enumerate(files), total=len(files), desc="Distribution: "):
     for name in class_names:
         if name in file:
             class_names[name] = class_names[name]+1

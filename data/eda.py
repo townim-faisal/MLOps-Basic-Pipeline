@@ -18,7 +18,6 @@ print("Parameters:", params)
 # log file
 log = {}
 
-
 # list of files
 files = sorted([file for file in glob.glob(f"{params['lake_dir']}/*{params['extention']}")])
 print("Total files:", len(files))

@@ -12,9 +12,8 @@ from tqdm import tqdm
 import json
 from datetime import datetime
 import mlflow
-from mlflow import log_metric, log_param, log_artifacts
 
-from dataset import catsvsdogsDataset
+from dataset import CustomDataset
 from augment import transform_train, transform_val
 from models import AlexNet
 from train import Trainer
@@ -36,12 +35,10 @@ hyp_file.close()
 print('Configuration:', config)
 print("Hyperparameters:", hyp)
 
-trainset = catsvsdogsDataset(root_dir = config['root_dir'], train = True, transform = transform_train)
-
+trainset = CustomDataset(root_dir = config['data_dir'], train = True, transform = transform_train)
 train_loader = torch.utils.data.DataLoader(trainset, batch_size = hyp['batch_size'], shuffle = True, num_workers = hyp['workers'])
 
-valset = catsvsdogsDataset(root_dir = config['root_dir'], train = False, transform = transform_val)
-
+valset = CustomDataset(root_dir = config['data_dir'], train = False, transform = transform_val)
 val_loader = torch.utils.data.DataLoader(valset, batch_size = hyp['batch_size'], shuffle = False, num_workers = hyp['workers'])
 
 print("Number of training samples = ",len(trainset))
@@ -59,19 +56,26 @@ training_log = {}
 
 
 # MLflow on localhost with Tracking Server
-# mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri sqlite:///mydb.sqlite
-# mlflow.set_tracking_uri()
+# mlflow server -h 0.0.0.0 -p 5000 --backend-store-uri sqlite:///mydb.sqlite --default-artifact-root file:/home/your_user/mlruns
+mlflow.set_tracking_uri(config['mlflow_tracking_uri'])
 print("Current tracking uri:", mlflow.get_tracking_uri())
-mlflow.set_experiment(experiment_name=config['mlflow_experiment_name'])
+experiment_id = mlflow.set_experiment(experiment_name=config['mlflow_experiment_name'])
 
 best_acc, best_epoch = 0, 0
+SAVED_MODEL_PATH = os.path.join(config['artifact_path'], config['mlflow_experiment_name'], config['mlflow_run_name'])
+os.makedirs(SAVED_MODEL_PATH, exist_ok=True)
 
-with mlflow.start_run(run_name=config['mlflow_run_name']) as run:
+# log file
+df = pd.DataFrame(columns = ['epoch', 'lr', 'train_loss', 'val_loss', 'val_acc'])
+
+with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experiment_id) as run:
+    mlflow.log_params(hyp)
     for epoch in range(hyp['epochs']):
-        print('Epoch:', epoch+1)
+        print(f"Epoch: {epoch+1}/{hyp['epochs']}")
         model, optimizer, training_loss = trainer.run(model, loss, optimizer)    
         val_loss, val_acc = val.run(model, loss)
         lr = optimizer.param_groups[0]['lr']
+        df = df.append({'epoch': epoch+1, 'lr': lr, 'train_loss': training_loss, 'val_loss': val_loss, 'val_acc': val_acc}, ignore_index = True)
         """
         train loss, val loss, val acc, per class accuracy, learning rate -> store in ./log/log.csv
         """
@@ -85,15 +89,15 @@ with mlflow.start_run(run_name=config['mlflow_run_name']) as run:
                 "accuracy": best_acc,
                 "optimizer": optimizer.state_dict()
             }
-            torch.save(best_artifact, os.path.join(config['artifact_path'], 'best_model.pth'))
-            print('Saved best model')
+            torch.save(best_artifact, os.path.join(SAVED_MODEL_PATH, 'best_model.pth'))
+            print('Saved best model in:', os.path.join(SAVED_MODEL_PATH, 'best_model.pth'))
         
         artifact = {
             "model": model.state_dict(),
             "epoch": epoch+1,
             "accuracy": val_acc
         }
-        torch.save(artifact, os.path.join(config['artifact_path'], 'last_model.pth'))
+        torch.save(artifact, os.path.join(SAVED_MODEL_PATH, 'last_model.pth'))
         
         # mlflow log metrics
         metrics = {
@@ -102,7 +106,9 @@ with mlflow.start_run(run_name=config['mlflow_run_name']) as run:
         }
         mlflow.log_metrics(metrics, step=epoch+1)
         
-        # store plot in log/figures-> accuracy per epoch, val loss per epoch, residual graph, bar plot per class accuracy
+    
+    # save log
+    df.to_csv(os.path.join(SAVED_MODEL_PATH, 'log.csv'), index=False)
     mlflow.end_run()
     
 

@@ -12,7 +12,9 @@ Pillow
 streamlit
 jupyterlab
 scikit-learn
+scikit-image
 sklearn
+ffmpeg
 pytest
 pytest-dependency
 pre-commit

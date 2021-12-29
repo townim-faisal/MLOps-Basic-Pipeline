@@ -146,3 +146,5 @@ mlruns/**
 storage/**
 model/mlruns/*
 !*.dvc
+pipelines/logs/
+!.gitkeep

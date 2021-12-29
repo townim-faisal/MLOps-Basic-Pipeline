@@ -1,0 +1,19 @@
+lake_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train"
+warehouse_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse"
+version: "version 1"
+log_folder: "C:/T.Faisal/OFFICE/mlops-pipeline/data/log"
+figure_folder: "C:/T.Faisal/OFFICE/mlops-pipeline/data/figures"
+
+extention: '.jpg'
+num_classes: 2
+class_names: ['cat', 'dog']
+seed: 123
+
+# eda
+blur_threshold: 0.95
+similarity_threshold: 1.05
+
+# preprocess
+test_ratio: 0.2
+delete_blur_image: False
+delete_duplicate_image: False

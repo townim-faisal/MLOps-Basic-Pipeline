@@ -1,0 +1,26 @@
+{
+    "files": {
+        "dir": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train",
+        "count": 25000
+    },
+    "blur": {
+        "median_blur": 429.04457457474973,
+        "min_blur": 4.697842403838628,
+        "max_blur": 42627.022600049866,
+        "blur_cutoff": 407.5923458460122
+    },
+    "duplicate": {
+        "median_diff": 0.19704104997179037,
+        "diff_cutoff": 0.2068931024703799
+    },
+    "class_distribution": {
+        "class_names": [
+            "cat",
+            "dog"
+        ],
+        "dist": {
+            "cat": 12500,
+            "dog": 12500
+        }
+    }
+}

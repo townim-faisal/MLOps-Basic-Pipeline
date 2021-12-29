@@ -33,3 +33,5 @@ In another terminal, run this to monitor.
 export AIRFLOW_HOME=${PWD}/pipelines
 airflow scheduler
 ```
+
+For production, try to follow [this](https://airflow.apache.org/docs/apache-airflow/stable/production-deployment.html). Also, follow [this](https://airflow.apache.org/docs/apache-airflow/2.2.3/howto/set-up-database.html) to setup other database.

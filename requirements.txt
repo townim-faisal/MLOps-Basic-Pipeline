@@ -19,6 +19,7 @@ pytest
 pytest-dependency
 pre-commit
 dvc[all]
-apache-airflow
+apache-airflow[all]>=2.2.3
 mlflow>=1.22.0
 pyngrok
+termios

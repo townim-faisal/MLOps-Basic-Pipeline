@@ -24,6 +24,7 @@ storage/
 
 
 ## Environment setup
+Python version 3.8.5 is installed.
 ```
 virtualenv pipeline-env
 pip install -r requirements.txt

@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  mlopspipeline:
+    image: mlopspipeline
+    build:
+      context: .
+      dockerfile: ./Dockerfile

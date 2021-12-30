@@ -25,6 +25,7 @@ airflow users create --username admin --firstname admin --lastname admin --role 
 If you have already setup the project, do not need to initialize db. Run this only.
 ```bash
 export AIRFLOW_HOME=${PWD}/pipelines
+airflow dags list
 airflow webserver --port 8080
 ```
 

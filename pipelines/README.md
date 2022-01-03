@@ -13,6 +13,7 @@ Change following in `airflow.cfg` file.
 load_examples = False
 executor = LocalExecutor
 dags_folder = <absolute path>/pipelines/dags
+sql_alchemy_conn = sqlite:////<absolute path>/pipelines/airflow.db
 ```
 
 Then run these commands.

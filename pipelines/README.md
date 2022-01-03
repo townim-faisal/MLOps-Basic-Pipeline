@@ -12,6 +12,7 @@ Change following in `airflow.cfg` file.
 ```
 load_examples = False
 executor = LocalExecutor
+dags_folder = <absolute path>/pipelines/dags
 ```
 
 Then run these commands.

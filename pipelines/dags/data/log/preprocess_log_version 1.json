@@ -24,8 +24,8 @@
                 "dog": 2500
             }
         },
-        "train_folder": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\train",
-        "val_folder": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\val",
-        "data_file": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse\\version 1\\data.csv"
+        "train_folder": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/train",
+        "val_folder": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/val",
+        "data_file": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/data.csv"
     }
 }

@@ -22,10 +22,6 @@ airflow db reset
 airflow config get-value core sql_alchemy_conn
 airflow config get-value core executor
 airflow users create --username admin --firstname admin --lastname admin --role Admin --email admin@admin.org
-```
-
-If you have already setup the project, do not need to initialize db. Run this only.
-```bash
 export AIRFLOW_HOME=${PWD}/pipelines
 airflow dags list
 airflow webserver --port 8080
@@ -37,4 +33,11 @@ export AIRFLOW_HOME=${PWD}/pipelines
 airflow scheduler
 ```
 
-For production, try to follow [this](https://airflow.apache.org/docs/apache-airflow/stable/production-deployment.html). Also, follow [this](https://airflow.apache.org/docs/apache-airflow/2.2.3/howto/set-up-database.html) to setup other database.
+# Further Reading
+
+- [Core concepts](https://airflow.apache.org/docs/apache-airflow/1.10.6/concepts.html)
+- [Production deployment](https://airflow.apache.org/docs/apache-airflow/stable/production-deployment.html)
+- [Set up database](https://airflow.apache.org/docs/apache-airflow/2.2.3/howto/set-up-database.html)
+- [Schedule interval](https://airflow.apache.org/docs/apache-airflow/stable/dag-run.html#dag-runs)
+- [Catchup](https://airflow.apache.org/docs/apache-airflow/stable/dag-run.html#catchup)
+- [DAG](https://airflow.apache.org/docs/apache-airflow/stable/concepts/dags.htm)

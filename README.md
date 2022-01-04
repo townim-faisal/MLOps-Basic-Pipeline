@@ -26,9 +26,10 @@ storage/
 ## Environment setup
 Python version 3.8.5 is installed.
 ```
-virtualenv pipeline-env
+python -m venv pipeline-env
 pip install -r requirements.txt
 ```
+N.B: If you are in wsl, make sure run `pip install wheel` if needed.
 
 
 ## GCloud
@@ -46,4 +47,7 @@ dvc pull <file_name.dvc> -r myremote
 ```
 
 ## MLflow
-Will run the mlflow server in a central server.
+Will run the mlflow server in a central server. If you want to run `mlflow` locally, just run `mlflow ui` from root folder.
+
+## Airflow
+Use wsl or linux as there is no support for windows. Read setup in [here](pipelines/README.md).

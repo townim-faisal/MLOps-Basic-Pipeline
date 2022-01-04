@@ -147,4 +147,5 @@ storage/**
 model/mlruns/*
 !*.dvc
 pipelines/logs/
+pipelines/airflow-webserver.pid
 !.gitkeep

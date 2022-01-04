@@ -2,6 +2,7 @@ torch
 torchvision
 torchaudio
 tqdm
+pathlib
 pandas
 numpy
 matplotlib

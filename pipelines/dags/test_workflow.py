@@ -24,12 +24,13 @@ def training_model(model):
     print(model, ':', a)
     return a
 
+# A task must include or inherit the arguments task_id and owner, otherwise Airflow will raise an exception
 default_args = {
     'owner': 'airflow',
-    'depends_on_past': False
+    'depends_on_past': True # a task can only run if the previous run of the task in the previous DAG Run succeeded.
 }
 
-with DAG("test",
+with DAG("test_example",
     start_date=datetime(2021, 1 ,1), 
     schedule_interval='@daily', 
     default_args=default_args,
@@ -46,6 +47,7 @@ with DAG("test",
         ) for model_id in ['A', 'B', 'C']
     ]
 
+    # The BranchPythonOperator is much like the PythonOperator except that it expects a python_callable that returns a task_id (or list of task_ids).
     choosing_best_model_task = BranchPythonOperator(
         task_id="choosing_best_model",
         python_callable=choosing_best_model

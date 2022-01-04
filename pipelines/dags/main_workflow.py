@@ -44,7 +44,7 @@ with DAG("data_pipeline",
         task_id='eda',
         python_callable=eda_task,
         op_kwargs={
-            "file_name" : os.path.join(root_dir, "data", "params/param.yaml")
+            "file_name" : os.path.join(root_dir, "dags", "data", "params/param.yaml")
         },
         dag=data_dag
     )
@@ -53,7 +53,7 @@ with DAG("data_pipeline",
         task_id="preprocess",
         python_callable=preprocess_task,
         op_kwargs={
-            "file_name" : os.path.join(root_dir, "data", "params/param.yaml")
+            "file_name" : os.path.join(root_dir, "dags", "data", "params/param.yaml")
         },
         dag=data_dag
     )
@@ -68,9 +68,9 @@ with DAG("model_pipeline",
     catchup=False
 ) as model_dag:
 
-    model_dir = os.path.join(root_dir, 'model')
+    model_dir = os.path.join(root_dir, 'dags', 'model')
     model_task_id = BashOperator(
-        task_id="extract_data",
+        task_id="model_train",
         bash_command=f"cd {model_dir} && python main.py",
         dag=model_dag
     )

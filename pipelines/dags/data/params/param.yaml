@@ -1,8 +1,8 @@
-lake_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train"
-warehouse_dir: "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse"
+lake_dir: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train"
+warehouse_dir: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse"
 version: "version 1"
-log_folder: "C:/T.Faisal/OFFICE/mlops-pipeline/data/log"
-figure_folder: "C:/T.Faisal/OFFICE/mlops-pipeline/data/figures"
+log_folder: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/pipelines/dags/data/log"
+figure_folder: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/pipelines/dags/data/figures"
 
 extention: '.jpg'
 num_classes: 2

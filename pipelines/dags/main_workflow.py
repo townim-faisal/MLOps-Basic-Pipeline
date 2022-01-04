@@ -32,7 +32,7 @@ def preprocess_task(**kwargs):
         print('Failed to start because eda has not been completed')
 
 
-
+# Data Pipeline
 with DAG("data_pipeline",
     start_date=datetime(2021, 1 ,1), 
     schedule_interval=None, 
@@ -60,7 +60,7 @@ with DAG("data_pipeline",
 
     eda_task_id >> preprocess_task_id
 
-
+# Model Pipeline
 with DAG("model_pipeline",
     start_date=datetime(2021, 1 ,1), 
     schedule_interval=None, 

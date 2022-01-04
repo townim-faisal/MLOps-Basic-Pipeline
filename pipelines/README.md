@@ -11,9 +11,6 @@ airflow db init
 Change following in `airflow.cfg` file.
 ```
 load_examples = False
-executor = LocalExecutor
-dags_folder = <absolute path>/pipelines/dags
-sql_alchemy_conn = sqlite:////<absolute path>/pipelines/airflow.db
 ```
 
 Then run these commands.
@@ -39,5 +36,5 @@ airflow scheduler
 - [Production deployment](https://airflow.apache.org/docs/apache-airflow/stable/production-deployment.html)
 - [Set up database](https://airflow.apache.org/docs/apache-airflow/2.2.3/howto/set-up-database.html)
 - [Schedule interval](https://airflow.apache.org/docs/apache-airflow/stable/dag-run.html#dag-runs)
-- [Catchup](https://airflow.apache.org/docs/apache-airflow/stable/dag-run.html#catchup)
+- [Catchup](https://airflow.apache.org/docs/apache-airflow/stable/dag-run.html#catchup) : [blog](https://medium.com/nerd-for-tech/airflow-catchup-backfill-demystified-355def1b6f92)
 - [DAG](https://airflow.apache.org/docs/apache-airflow/stable/concepts/dags.htm)

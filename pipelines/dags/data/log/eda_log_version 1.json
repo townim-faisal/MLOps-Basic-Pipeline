@@ -1,6 +1,6 @@
 {
     "files": {
-        "dir": "C:/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train",
+        "dir": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train",
         "count": 25000
     },
     "blur": {

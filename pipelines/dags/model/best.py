@@ -20,7 +20,7 @@ def get_best_run(runs):
             if m['val acc']>best_m:
                 best_m = m['val acc']
                 best_r = r
-    return best_r, best_val
+    return best_r, best_m
 
 mlflow.set_tracking_uri(config['mlflow_tracking_uri'])
 experiment_id = mlflow.set_experiment(experiment_name=config['mlflow_experiment_name'])
@@ -32,7 +32,7 @@ best_run, best_val = get_best_run(runs)
 print(best_run.data.tags)
 
 best_model_path = os.path.join(config['mlflow_experiment_name'], config['mlflow_run_name'], 'best_model.pth')
-print(best_model_path)
+print(best_model_path, best_val)
 
 with open(os.path.join(config['artifact_path'], config['mlflow_experiment_name'], 'best_model.txt'), 'w') as file:
     file.write(f'path\tval acc\n')

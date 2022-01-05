@@ -68,7 +68,7 @@ os.makedirs(SAVED_MODEL_PATH, exist_ok=True)
 # log file
 df = pd.DataFrame(columns = ['epoch', 'lr', 'train_loss', 'val_loss', 'val_acc'])
 
-with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experiment_id) as run:
+with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experiment_id.experiment_id) as run:
     mlflow.log_params(hyp)
     for epoch in range(hyp['epochs']):
         print(f"Epoch: {epoch+1}/{hyp['epochs']}")

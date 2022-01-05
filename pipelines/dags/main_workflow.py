@@ -1,4 +1,5 @@
 from airflow import DAG
+from airflow.decorators import dag
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
@@ -33,20 +34,20 @@ def preprocess_task(**kwargs):
 
 
 # Data Pipeline
-with DAG("data_pipeline",
-    start_date=datetime(2021, 1 ,1), 
+@dag(
+    dag_id = "data_pipeline",
+    start_date=datetime(2022, 1 ,1), 
     schedule_interval=None, 
     default_args=default_args,
     catchup=False
-) as data_dag:
-
+)
+def data():
     eda_task_id = PythonOperator(
         task_id='eda',
         python_callable=eda_task,
         op_kwargs={
             "file_name" : os.path.join(root_dir, "dags", "data", "params/param.yaml")
-        },
-        dag=data_dag
+        }
     )
 
     preprocess_task_id = PythonOperator(
@@ -54,30 +55,43 @@ with DAG("data_pipeline",
         python_callable=preprocess_task,
         op_kwargs={
             "file_name" : os.path.join(root_dir, "dags", "data", "params/param.yaml")
-        },
-        dag=data_dag
+        }
     )
 
     eda_task_id >> preprocess_task_id
 
 # Model Pipeline
-with DAG("model_pipeline",
-    start_date=datetime(2021, 1 ,1), 
+# {
+#     'wait_for_downstream': True,
+#     'owner': 'airflow',
+#     'depends_on_past': False
+# },
+@dag(
+    dag_id="model_pipeline",
+    start_date=datetime(2022, 1 ,1), 
     schedule_interval=None, 
     default_args=default_args,
     catchup=False
-) as model_dag:
-
+)
+def model():
     model_dir = os.path.join(root_dir, 'dags', 'model')
+
     model_task_id = BashOperator(
         task_id="model_train",
-        bash_command=f"cd {model_dir} && python main.py",
-        dag=model_dag
+        bash_command=f"cd {model_dir} && python main.py"
     )
 
-    model_task_id
+    find_best_model_task_id = BashOperator(
+        task_id="find_best_model",
+        bash_command=f"cd {model_dir} && python best.py"
+    )
+    
+    model_task_id>>find_best_model_task_id
 
 
+# Define DAGs
+data_dag = data()
+model_dag = model()
 
 
 

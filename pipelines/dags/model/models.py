@@ -1,40 +1,71 @@
-import torch.nn as nn
-import torch
-import torch.nn.functional as F
+import re
+import tensorflow as tf
+from tensorflow.keras import Model
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.losses import categorical_crossentropy
+from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, Dropout
 
-class AlexNet(nn.Module):
-    def __init__(self, num_classes=2):
-        super(AlexNet, self).__init__()
-        self.conv1 = nn.Conv2d(3, 16, kernel_size = 11, stride = 4)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.maxpool1 = nn.MaxPool2d(kernel_size = 3, stride = 2)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size = 5, padding = 2)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.maxpool2 = nn.MaxPool2d(kernel_size = 3, stride = 2)
-        self.conv3 = nn.Conv2d(32, 64, kernel_size = 3, padding = 1)
-        self.bn3 = nn.BatchNorm2d(64)
-        self.conv4 = nn.Conv2d(64, 64, kernel_size = 3, padding = 1)
-        self.bn4 = nn.BatchNorm2d(64)
-        self.conv5 = nn.Conv2d(64, 32, kernel_size = 3, padding = 1)
-        self.bn5 = nn.BatchNorm2d(32)
-        self.maxpool3 = nn.MaxPool2d(kernel_size = 3, stride = 2)
-        self.fc1 = nn.Linear(1152, 256)
-        self.fc2 = nn.Linear(256, 64)
-        self.fc3 = nn.Linear(64, num_classes)
+# AlexNet model
+class AlexNet(Model):
+    def __init__(self, input_shape, num_classes):
+        super(AlexNet, self).__init__(name='')
 
-    def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)))
+        self.conv1 = Conv2D(96, kernel_size=(11,11), strides= 4,
+                        padding= 'valid', activation= 'relu',
+                        input_shape= input_shape,
+                        kernel_initializer= 'he_normal')
+                        
+        self.maxpool1 = MaxPooling2D(pool_size=(3,3), strides= (2,2),
+                              padding= 'valid', data_format= None)
+
+        self.conv2 = Conv2D(256, kernel_size=(5,5), strides= 1,
+                        padding= 'same', activation= 'relu',
+                        kernel_initializer= 'he_normal')
+        self.maxpool2 = MaxPooling2D(pool_size=(3,3), strides= (2,2),
+                              padding= 'valid', data_format= None)
+
+        self.conv3 = Conv2D(384, kernel_size=(3,3), strides= 1,
+                        padding= 'same', activation= 'relu',
+                        kernel_initializer= 'he_normal')
+
+        self.conv4 = Conv2D(384, kernel_size=(3,3), strides= 1,
+                        padding= 'same', activation= 'relu',
+                        kernel_initializer= 'he_normal')
+
+        self.conv5 = Conv2D(256, kernel_size=(3,3), strides= 1,
+                        padding= 'same', activation= 'relu',
+                        kernel_initializer= 'he_normal')
+
+        self.maxpool3 = MaxPooling2D(pool_size=(3,3), strides= (2,2),
+                              padding= 'valid', data_format= None)
+    
+        self.flatten1 = Flatten()
+        self.dropout1 = Dropout(0.5)
+        self.fc1 = Dense(2048, activation= 'relu')
+        self.dropout2 = Dropout(0.5)
+        self.fc2 = Dense(2048, activation= 'relu')
+        self.fc3 = Dense(1000, activation= 'relu')
+        self.fc4 = Dense(num_classes, activation= 'softmax')
+        
+    def call(self, input_tensor, training=False):
+        
+        x = self.conv1(input_tensor)
         x = self.maxpool1(x)
-        x = F.relu(self.bn2(self.conv2(x)))
+        
+        x = self.conv2(x)
         x = self.maxpool2(x)
-        x = F.relu(self.bn3(self.conv3(x)))
-        x = F.relu(self.bn4(self.conv4(x)))
-        x = F.relu(self.bn5(self.conv5(x)))
+    
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
         x = self.maxpool3(x)
-        x = x.view(-1, 1152)
-        x = F.relu(self.fc1(x))
-        x = F.dropout(x, 0.5)
-        x = F.relu(self.fc2(x))
-        x = F.dropout(x, 0.5)
+        x = self.flatten1(x)
+        x = self.dropout1(x)
+        x = self.fc1(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)
         x = self.fc3(x)
+        x = self.fc4(x)
+    
         return x

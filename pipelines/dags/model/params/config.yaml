@@ -1,6 +1,21 @@
 data_dir: "./storage/data-warehouse/version 1/"
+# paths and directories
+result_dir: './storage/results'
+train_dir: "./storage/train"
+valid_dir: "/storage/valid"
+test_dir: "/storage/test"
 num_classes: 2
 class_names: ['cat', 'dog']
+image_height: 227
+image_width: 227
+num_channels: 3
+# model version
+## follow this versioning rule 
+### cnn -> 1.0.
+### alexnet -> 2.0.
+### resnet -> 3.0.
+### inception -> 4.0.
+version: '1.0'
 # mlflow
 mlflow_experiment_name: 'Experiment 1'
 mlflow_run_name: ''

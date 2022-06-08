@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
-import torch
-import torch.nn as nn
-import torch.optim as optim
+# import torch
+# import torch.nn as nn
+# import torch.optim as optim
 import os
 import yaml
 import sys
@@ -14,6 +14,12 @@ from datetime import datetime
 import mlflow
 
 from dataset import CustomDataset
+import tensorflow as tf
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+
+# import config
+import models
+from utils import generate_train_dataset
 from augment import transform_train, transform_val
 from models import AlexNet
 from train import Trainer
@@ -35,23 +41,34 @@ hyp_file.close()
 print('Configuration:', config)
 print("Hyperparameters:", hyp)
 
-trainset = CustomDataset(root_dir = config['data_dir'], train = True, transform = transform_train)
-train_loader = torch.utils.data.DataLoader(trainset, batch_size = hyp['batch_size'], shuffle = True, num_workers = hyp['workers'])
+train_data_config = (config.train_dir, config.valid_dir, config.image_height, config.image_width, config.batch_size, config.batch_size)
 
-valset = CustomDataset(root_dir = config['data_dir'], train = False, transform = transform_val)
-val_loader = torch.utils.data.DataLoader(valset, batch_size = hyp['batch_size'], shuffle = False, num_workers = hyp['workers'])
+train_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batch_size'], train = True, transform = transform_train)
+# train_loader = torch.utils.data.DataLoader(trainset, batch_size = hyp['batch_size'], shuffle = True, num_workers = hyp['workers'])
+
+val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batch_size'], train = False, transform = transform_val)
+# val_loader = torch.utils.data.DataLoader(valset, batch_size = hyp['batch_size'], shuffle = False, num_workers = hyp['workers'])
+# get the original_dataset
+# train_dataset, valid_dataset = generate_train_dataset(train_data_config)
+
 
 print("Number of training samples = ",len(trainset))
 print("Number of testing samples = ",len(valset))
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = AlexNet(num_classes=config['num_classes']).to(device)
-optimizer = optim.Adam(model.parameters(), lr=float(hyp['lr']), weight_decay=float(hyp['wd']))
-loss = nn.CrossEntropyLoss()
-
-trainer = Trainer(train_loader, device)
-val = Val(val_loader, device)
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+model = AlexNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+# optimizer = optim.Adam(model.parameters(), lr=float(hyp['lr']), weight_decay=float(hyp['wd']))
+# loss = nn.CrossEntropyLoss()
+if config['optimizer'] == 'sgd':
+    optimizer = tf.keras.optimizers.SGD(hyp['lr'], hyp['momentum'])
+else:
+    print("add another optimizer like Adam or RMSprop")
+model.compile(optimizer= optimizer,
+                loss='categorical_crossentropy',
+                metrics=['accuracy'])
+trainer = Trainer(train_loader)
+val = Val(val_loader)
 training_log = {}
 
 

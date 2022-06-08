@@ -4,4 +4,16 @@ lr: 1e-4
 wd: 5e-4
 epochs: 3
 workers: 0
-model: 'Alexnet'
+model: 'alexnet'
+# networks
+# model = "cnn"
+# model = "resnet"
+# model = "inception"
+
+
+optimizer_fn: "sgd"
+optimizer_fn: "adam"
+optimizer_fn: "rmsprop"
+
+learning_rate: 0.01
+momentum: 0.9

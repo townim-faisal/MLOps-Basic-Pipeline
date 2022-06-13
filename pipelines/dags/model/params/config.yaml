@@ -1,6 +1,6 @@
-data_dir: "./storage/data-warehouse/version 1/"
+data_dir: "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-warehouse/version 1"
 # paths and directories
-result_dir: './storage/results'
+result_dir: '/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/results'
 train_dir: "./storage/train"
 valid_dir: "/storage/valid"
 test_dir: "/storage/test"
@@ -19,5 +19,5 @@ version: '1.0'
 # mlflow
 mlflow_experiment_name: 'Experiment 1'
 mlflow_run_name: ''
-mlflow_tracking_uri: 'file:./mlruns'
-artifact_path: "./storage/artifact"
+mlflow_tracking_uri: 'file:/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/mlruns'
+artifact_path: "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/artifact"

@@ -24,8 +24,8 @@
                 "dog": 2500
             }
         },
-        "train_folder": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/train",
-        "val_folder": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/val",
-        "data_file": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/data.csv"
+        "train_folder": "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-warehouse/version 1/train",
+        "val_folder": "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-warehouse/version 1/val",
+        "data_file": "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-warehouse/version 1/data.csv"
     }
 }

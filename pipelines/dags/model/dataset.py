@@ -50,6 +50,7 @@ class CustomDataset(Sequence):
         if train:
             self.training_file = os.path.join(self.root_dir, "train")
             self.file_list = os.listdir(self.training_file)
+            print(self.file_list)
 
         else: 
             self.training_file = os.path.join(self.root_dir, "val")
@@ -73,5 +74,5 @@ class CustomDataset(Sequence):
         self.batch_size]
 
         return np.array([
-            resize(imread(file_name), (227, 227))
+            resize(imread(os.path.join(self.training_file, file_name)), (227, 227))
                for file_name in batch_x]), np.array(batch_y)

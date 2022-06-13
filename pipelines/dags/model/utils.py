@@ -4,9 +4,17 @@ import numpy as np
 
 from tensorflow import keras
 from sklearn.metrics import confusion_matrix
-
-import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+from keras.losses import SparseCategoricalCrossentropy 
+
+def loss(model, x, y, training):
+    # training=training is needed only if there are layers with different
+    # behavior during training versus inference (e.g. Dropout).
+    y_ = model(x, training=training)
+    loss_object = SparseCategoricalCrossentropy(from_logits=True)
+
+    return loss_object(y_true=y, y_pred=y_)
 
 def generate_train_dataset(config):
     #train

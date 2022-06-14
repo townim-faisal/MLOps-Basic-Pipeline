@@ -26,7 +26,7 @@ from train import Trainer
 from val import Val
 
 logging.warning("Warning. ")
-
+tf.executing_eagerly()
 # Configuration
 config_file = open("params/config.yaml", "r")
 config = yaml.safe_load(config_file)
@@ -62,11 +62,12 @@ model = AlexNet(input_shape=(config['image_height'], config['image_width'], conf
 learning_rate = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
 
 if hyp['optimizer_fn'] == 'sgd':
-    optimizer = tf.keras.optimizers.SGD(learning_rate, hyp['momentum'])
+    optimizer = tf.keras.optimizers.SGD(hyp['lr'], hyp['momentum'])
 else:
     print("add another optimizer like Adam or RMSprop")
+     #loss='categorical_crossentropy',
 model.compile(optimizer= optimizer,
-                loss='categorical_crossentropy',
+                loss=loss,
                 metrics=['accuracy'])
 trainer = Trainer(train_loader)
 val = Val(val_loader)
@@ -90,9 +91,9 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
     mlflow.log_params(hyp)
     for epoch in range(hyp['epochs']):
         print(f"Epoch: {epoch+1}/{hyp['epochs']}")
-        model, optimizer, training_loss = trainer.run(model, loss, optimizer)    
-        val_loss, val_acc = val.run(model, loss)
-        lr = optimizer.param_groups[0]['lr']
+        model, optimizer, training_loss = trainer.run(model, optimizer)    
+        val_loss, val_acc = val.run(model)
+        lr = optimizer.lr
         df = df.append({'epoch': epoch+1, 'lr': lr, 'train_loss': training_loss, 'val_loss': val_loss, 'val_acc': val_acc}, ignore_index = True)
         """
         train loss, val loss, val acc, per class accuracy, learning rate -> store in ./log/log.csv
@@ -101,7 +102,7 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
         if val_acc>best_acc:
             best_acc = val_acc
             best_epoch = epoch+1
-            model_name="{}_{}_dogcat".format(config.model, config.version)
+            model_name="{}_{}_dogcat".format(hyp['model'], config['version'])
             model.save(os.path.join(SAVED_MODEL_PATH), model_name)
             # best_artifact = {
             #     "model": model.state_dict(),
@@ -118,7 +119,7 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
         #     "accuracy": val_acc
         # }
         # torch.save(artifact, os.path.join(SAVED_MODEL_PATH, 'last_model.pth'))
-        model_name="{}_{}_dogcat_last_model".format(config.model, config.version)
+        model_name="{}_{}_dogcat_last_model".format(hyp['model'], config['version'])
         model.save(os.path.join(SAVED_MODEL_PATH, model_name))
         # mlflow log metrics
         metrics = {

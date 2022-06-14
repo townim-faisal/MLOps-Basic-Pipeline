@@ -43,7 +43,7 @@ class AlexNet(Model):
         self.dropout2 = Dropout(0.5)
         self.fc2 = Dense(2048, activation= 'relu')
         self.fc3 = Dense(1000, activation= 'relu')
-        self.fc4 = Dense(num_classes, activation= 'softmax')
+        self.fc4 = Dense(num_classes)
         
     def call(self, input_tensor, training=False):
         

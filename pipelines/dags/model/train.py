@@ -7,6 +7,7 @@ import os
 import yaml
 import sys
 import logging
+from tensorflow.keras.losses import SparseCategoricalCrossentropy 
 
 class Trainer:
     def __init__(self, train_loader):
@@ -15,12 +16,20 @@ class Trainer:
 
         # l = loss(model, features, labels, training=False)
         # print("Loss test: {}".format(l))
-    def grad(self, model, inputs, targets, loss):
+    def grad(self, model, inputs, targets):
         with tf.GradientTape() as tape:
-            loss_value = loss(model, inputs, targets, training=True)
+            loss_value = self.loss(model, inputs, targets, training=True)
             return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
-    def run(self, model, loss, optimizer):
+    def loss(self, model, x, y, training):
+        # training=training is needed only if there are layers with different
+        # behavior during training versus inference (e.g. Dropout).
+        y_ = model(x, training=training)
+        loss_object = SparseCategoricalCrossentropy(from_logits=True)
+
+        return loss_object(y_true=y, y_pred=y_)
+
+    def run(self, model, optimizer):
         epoch_loss_avg = tf.keras.metrics.Mean()
         epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
 
@@ -29,7 +38,7 @@ class Trainer:
         for batch_id, data in bar:
             inputs, labels = data[0], data[1]
             # start training
-            loss, grads = self.grad(model, inputs, labels, loss)
+            loss, grads = self.grad(model, inputs, labels)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
             # Track progress
@@ -39,7 +48,7 @@ class Trainer:
             # training=True is needed only if there are layers with different
             # behavior during training versus inference (e.g. Dropout).
             epoch_accuracy.update_state(labels, model(inputs, training=True))
-            bar.set_postfix_str('Loss='+str(round(epoch_loss_avg/(batch_id+1), 4)))
+            bar.set_postfix_str('Loss='+str(epoch_loss_avg.result)) #/(batch_id+1)
             if batch_id==10:
                 break
         return model, optimizer, epoch_loss_avg.result() #/len(bar)

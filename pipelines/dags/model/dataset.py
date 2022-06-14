@@ -50,7 +50,6 @@ class CustomDataset(Sequence):
         if train:
             self.training_file = os.path.join(self.root_dir, "train")
             self.file_list = os.listdir(self.training_file)
-            print(self.file_list)
 
         else: 
             self.training_file = os.path.join(self.root_dir, "val")

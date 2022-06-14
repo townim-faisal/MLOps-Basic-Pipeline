@@ -5,6 +5,10 @@ from mlflow.tracking import MlflowClient
 
 with open("params/config.yaml", "r") as config_file:
     config = yaml.safe_load(config_file)
+# hyperparameter
+hyp_file = open("params/hyp.yaml", "r")
+hyp = yaml.safe_load(hyp_file)
+hyp_file.close()
 
 def print_run_info(runs):
     for r in runs:
@@ -29,9 +33,10 @@ client = MlflowClient()
 # runs = client.search_runs("my_experiment_id", "", order_by=["metrics.rmse DESC"], max_results=1)
 runs = client.search_runs(experiment_id.experiment_id, "")
 best_run, best_val = get_best_run(runs)
-print(best_run.data.tags)
+print(best_run)
+model_name="{}_{}_dogcat_last_model".format(hyp['model'], config['version'])
 
-best_model_path = os.path.join(config['mlflow_experiment_name'], config['mlflow_run_name'], 'best_model.pth')
+best_model_path = os.path.join(config['mlflow_experiment_name'], config['mlflow_run_name'], model_name)
 print(best_model_path, best_val)
 
 with open(os.path.join(config['artifact_path'], config['mlflow_experiment_name'], 'best_model.txt'), 'w') as file:

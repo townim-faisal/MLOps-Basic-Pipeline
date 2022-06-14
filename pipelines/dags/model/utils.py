@@ -16,7 +16,7 @@ def loss(model, x, y, training):
 
     return loss_object(y_true=y, y_pred=y_)
 
-def generate_train_dataset(config):
+def generate_train_dataset(data_dir, batch_size):
     #train
     train_datagen = ImageDataGenerator(
                     rescale=1./255,
@@ -26,20 +26,20 @@ def generate_train_dataset(config):
                     shear_range=0.1,
                     zoom_range=0.1)
 
-    train_generator = train_datagen.flow_from_directory(config[0],
-                                                        target_size=(config[2], config[3]),
+    train_generator = train_datagen.flow_from_directory(os.path.join(data_dir, 'train'),
+                                                        target_size=(227,227),
                                                         color_mode="rgb",
-                                                        batch_size=config[4],
+                                                        batch_size=batch_size,
                                                         seed=1,
                                                         shuffle=True,
                                                         class_mode="categorical")
 
     #valid
     valid_datagen = ImageDataGenerator(rescale=1.0/255.0)
-    valid_generator = valid_datagen.flow_from_directory(config[1],
-                                                        target_size=(config[2], config[3]),
+    valid_generator = valid_datagen.flow_from_directory(os.path.join(data_dir, 'val'),
+                                                        target_size=(227, 227),
                                                         color_mode="rgb",
-                                                        batch_size=config[5],
+                                                        batch_size=batch_size,
                                                         seed=7,
                                                         shuffle=True,
                                                         class_mode="categorical"

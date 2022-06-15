@@ -1,8 +1,8 @@
 seed: 420
 batch_size: 100
 lr: 0.0001
-wd: 0.000
-epochs: 3
+wd: 0.0005
+epochs: 1
 workers: 0
 model: 'alexnet'
 # networks

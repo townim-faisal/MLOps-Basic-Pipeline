@@ -33,8 +33,8 @@ client = MlflowClient()
 # runs = client.search_runs("my_experiment_id", "", order_by=["metrics.rmse DESC"], max_results=1)
 runs = client.search_runs(experiment_id.experiment_id, "")
 best_run, best_val = get_best_run(runs)
-print(best_run)
-model_name="{}_{}_dogcat_last_model".format(hyp['model'], config['version'])
+
+model_name="{}_{}_dogcat".format(hyp['model'], config['version'])
 
 best_model_path = os.path.join(config['mlflow_experiment_name'], config['mlflow_run_name'], model_name)
 print(best_model_path, best_val)

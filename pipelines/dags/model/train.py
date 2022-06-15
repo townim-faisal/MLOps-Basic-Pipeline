@@ -48,7 +48,7 @@ class Trainer:
             # training=True is needed only if there are layers with different
             # behavior during training versus inference (e.g. Dropout).
             epoch_accuracy.update_state(labels, model(inputs, training=True))
-            bar.set_postfix_str('Loss='+str(epoch_loss_avg.result)) #/(batch_id+1)
-            if batch_id==10:
-                break
-        return model, optimizer, epoch_loss_avg.result() #/len(bar)
+            bar.set_postfix_str('Loss='+str(tf.keras.backend.get_value(epoch_loss_avg.result))) #/(batch_id+1)
+            # if batch_id==10:
+            #     break
+        return model, optimizer, tf.keras.backend.get_value(epoch_loss_avg.result()), tf.keras.backend.get_value(epoch_accuracy.result()) #/len(bar)

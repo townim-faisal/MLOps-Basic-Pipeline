@@ -39,7 +39,7 @@ class Val:
                 # epoch_loss += float(loss.item())
                 # _, predicted = torch.max(outputs.data, 1)
                 # prediction = tf.math.argmax(outputs, axis=1, output_type=tf.int64)
-                test_accuracy(outputs, labels)
+                test_accuracy.update_state(labels, outputs)
 
                 # total += labels.size(0)
                 # correct += (predicted == labels).sum().item()

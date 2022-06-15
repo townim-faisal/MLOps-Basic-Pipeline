@@ -66,9 +66,9 @@ if hyp['optimizer_fn'] == 'sgd':
 else:
     print("add another optimizer like Adam or RMSprop")
      #loss='categorical_crossentropy',
-model.compile(optimizer= optimizer,
-                loss=loss,
-                metrics=['accuracy'])
+# model.compile(optimizer= optimizer,
+#                 loss=loss,
+#                 metrics=['accuracy'])
 trainer = Trainer(train_loader)
 val = Val(val_loader)
 training_log = {}
@@ -85,16 +85,16 @@ SAVED_MODEL_PATH = os.path.join(config['artifact_path'], config['mlflow_experime
 os.makedirs(SAVED_MODEL_PATH, exist_ok=True)
 
 # log file
-df = pd.DataFrame(columns = ['epoch', 'lr', 'train_loss', 'val_loss', 'val_acc'])
+df = pd.DataFrame(columns = ['epoch', 'lr', 'train_acc', 'train_loss', 'val_loss', 'val_acc'])
 
 with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experiment_id.experiment_id) as run:
     mlflow.log_params(hyp)
     for epoch in range(hyp['epochs']):
         print(f"Epoch: {epoch+1}/{hyp['epochs']}")
-        model, optimizer, training_loss = trainer.run(model, optimizer)    
+        model, optimizer, train_loss, train_acc = trainer.run(model, optimizer)    
         val_loss, val_acc = val.run(model)
         lr = optimizer.lr
-        df = df.append({'epoch': epoch+1, 'lr': lr, 'train_loss': training_loss, 'val_loss': val_loss, 'val_acc': val_acc}, ignore_index = True)
+        df = df.append({'epoch': epoch+1, 'lr': lr, 'train_acc': train_acc, 'train_loss': train_loss, 'val_loss': val_loss, 'val_acc': val_acc}, ignore_index = True)
         """
         train loss, val loss, val acc, per class accuracy, learning rate -> store in ./log/log.csv
         """
@@ -124,7 +124,9 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
         # mlflow log metrics
         metrics = {
             "val acc": val_acc,
-            "val loss": val_loss
+            "val loss": val_loss,
+            "train_acc": train_acc,
+            "train_loss": train_loss
         }
         mlflow.log_metrics(metrics, step=epoch+1)
     

@@ -1,6 +1,4 @@
-torch
-torchvision
-torchaudio
+tensorflow
 tqdm
 pathlib
 pandas

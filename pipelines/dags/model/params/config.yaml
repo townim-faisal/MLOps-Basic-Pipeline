@@ -1,8 +1,23 @@
-data_dir: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-warehouse/version 1/"
+data_dir: "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-warehouse/version 1"
+# paths and directories
+result_dir: '/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/results'
+train_dir: "./storage/train"
+valid_dir: "/storage/valid"
+test_dir: "/storage/test"
 num_classes: 2
 class_names: ['cat', 'dog']
+image_height: 227
+image_width: 227
+num_channels: 3
+# model version
+## follow this versioning rule 
+### cnn -> 1.0.
+### alexnet -> 2.0.
+### resnet -> 3.0.
+### inception -> 4.0.
+version: '1.0'
 # mlflow
 mlflow_experiment_name: 'Experiment 1'
-mlflow_run_name: 'Version 1'
-mlflow_tracking_uri: 'file:/mnt/c/T.Faisal/OFFICE/mlops-pipeline/mlruns'
-artifact_path: "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/artifact"
+mlflow_run_name: ''
+mlflow_tracking_uri: 'file:/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/mlruns'
+artifact_path: "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/artifact"

@@ -1,6 +1,6 @@
 {
     "files": {
-        "dir": "/mnt/c/T.Faisal/OFFICE/mlops-pipeline/storage/data-lake/23122021/train",
+        "dir": "/home/bs358/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-lake/train",
         "count": 25000
     },
     "blur": {

@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
-# import torch
-# import torch.nn as nn
-# import torch.optim as optim
+
 import os
 import yaml
 import sys
@@ -17,11 +15,9 @@ from dataset import CustomDataset
 import tensorflow as tf
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 
-# import config
 import models
-from utils import generate_train_dataset, loss
 from augment import transform_train, transform_val
-from models import AlexNet
+from models import AlexNet, CNN, ResNet
 from train import Trainer
 from val import Val
 
@@ -37,17 +33,13 @@ hyp_file = open("params/hyp.yaml", "r")
 hyp = yaml.safe_load(hyp_file)
 hyp_file.close()
 
-
 print('Configuration:', config)
 print("Hyperparameters:", hyp)
 
-# train_data_config = (config.train_dir, config.valid_dir, config.image_height, config.image_width, config.batch_size, config.batch_size)
 print(config['data_dir'])
 train_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batch_size'], train = True, transform = transform_train)
-# train_loader = torch.utils.data.DataLoader(trainset, batch_size = hyp['batch_size'], shuffle = True, num_workers = hyp['workers'])
-
 val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batch_size'], train = False, transform = transform_val)
-# val_loader = torch.utils.data.DataLoader(valset, batch_size = hyp['batch_size'], shuffle = False, num_workers = hyp['workers'])
+
 # get the original_dataset
 # train_dataset, valid_dataset = generate_train_dataset(train_data_config)
 # result_save_path = os.path.join(config.result_dir, config.model)
@@ -55,20 +47,24 @@ val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batc
 print("Number of training samples = ",len(train_loader))
 print("Number of testing samples = ",len(val_loader))
 
+if hyp['model'] == "cnn":
+    model = CNN(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+elif hyp['model'] == "alexnet":
+    model = AlexNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+elif hyp['model'] == "resnet":
+    model = ResNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+else:
+    print('add inception')
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = AlexNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
-# optimizer = optim.Adam(model.parameters(), lr=float(hyp['lr']), weight_decay=float(hyp['wd']))
-learning_rate = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
+learning_rate_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
 
 if hyp['optimizer_fn'] == 'sgd':
-    optimizer = tf.keras.optimizers.SGD(hyp['lr'], hyp['momentum'])
-else:
-    print("add another optimizer like Adam or RMSprop")
-     #loss='categorical_crossentropy',
-# model.compile(optimizer= optimizer,
-#                 loss=loss,
-#                 metrics=['accuracy'])
+    optimizer = tf.keras.optimizers.SGD(learning_rate_scheduler, hyp['momentum'])
+elif hyp['optimizer_fn'] == 'adam':
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate_scheduler)
+elif hyp['optimizer_fn'] == 'rmsprop':
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learning_rate_scheduler) #,momentum=hyp['momentum']
+     
 trainer = Trainer(train_loader)
 val = Val(val_loader)
 training_log = {}
@@ -104,21 +100,8 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
             best_epoch = epoch+1
             model_name="{}_{}_dogcat".format(hyp['model'], config['version'])
             model.save(os.path.join(SAVED_MODEL_PATH), model_name)
-            # best_artifact = {
-            #     "model": model.state_dict(),
-            #     "epoch": best_epoch,
-            #     "accuracy": best_acc,
-            #     "optimizer": optimizer.state_dict()
-            # }
-            # torch.save(best_artifact, os.path.join(SAVED_MODEL_PATH, 'best_model.pth'))
             print('Saved best model in:', os.path.join(SAVED_MODEL_PATH, model_name))
 
-        # artifact = {
-        #     "model": model.state_dict(),
-        #     "epoch": epoch+1,
-        #     "accuracy": val_acc
-        # }
-        # torch.save(artifact, os.path.join(SAVED_MODEL_PATH, 'last_model.pth'))
         model_name="{}_{}_dogcat_last_model".format(hyp['model'], config['version'])
         model.save(os.path.join(SAVED_MODEL_PATH, model_name))
         # mlflow log metrics
@@ -133,9 +116,3 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
     # save log
     df.to_csv(os.path.join(SAVED_MODEL_PATH, 'log.csv'), index=False)
     mlflow.end_run()
-    
-
-
-
-
-

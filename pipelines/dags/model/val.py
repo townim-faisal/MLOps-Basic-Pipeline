@@ -17,7 +17,7 @@ class Val:
         # training=training is needed only if there are layers with different
         # behavior during training versus inference (e.g. Dropout).
         y_ = model(x, training=training)
-        loss_object = SparseCategoricalCrossentropy(from_logits=True)
+        loss_object = SparseCategoricalCrossentropy(from_logits=False)
 
         return y_, loss_object(y_true=y, y_pred=y_)
 

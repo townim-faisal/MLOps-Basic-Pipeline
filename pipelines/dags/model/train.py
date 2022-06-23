@@ -25,7 +25,7 @@ class Trainer:
         # training=training is needed only if there are layers with different
         # behavior during training versus inference (e.g. Dropout).
         y_ = model(x, training=training)
-        loss_object = SparseCategoricalCrossentropy(from_logits=True)
+        loss_object = SparseCategoricalCrossentropy(from_logits=False)
 
         return loss_object(y_true=y, y_pred=y_)
 
@@ -37,6 +37,7 @@ class Trainer:
         
         for batch_id, data in bar:
             inputs, labels = data[0], data[1]
+            print(batch_id)
             # start training
             loss, grads = self.grad(model, inputs, labels)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))

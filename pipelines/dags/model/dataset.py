@@ -1,6 +1,7 @@
 from tensorflow.keras.utils import Sequence
 from skimage.io import imread
 from skimage.transform import resize
+from augment import transform_train, transform_val
 import os
 import numpy as np
 import math
@@ -39,5 +40,5 @@ class CustomDataset(Sequence):
         self.batch_size]
 
         return np.array([
-            resize(imread(os.path.join(self.training_file, file_name)), (227, 227))
+            self.transform(resize(imread(os.path.join(self.training_file, file_name)), (227, 227)))
                for file_name in batch_x]), np.array(batch_y)

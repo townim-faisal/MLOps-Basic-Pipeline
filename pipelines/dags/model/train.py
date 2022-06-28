@@ -37,7 +37,7 @@ class Trainer:
         
         for batch_id, data in bar:
             inputs, labels = data[0], data[1]
-            print(batch_id)
+            
             # start training
             loss, grads = self.grad(model, inputs, labels)
             optimizer.apply_gradients(zip(grads, model.trainable_variables))

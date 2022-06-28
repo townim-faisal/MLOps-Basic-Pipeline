@@ -5,6 +5,7 @@ from augment import transform_train, transform_val
 import os
 import numpy as np
 import math
+import random
 
 class CustomDataset(Sequence):
     
@@ -17,11 +18,16 @@ class CustomDataset(Sequence):
         if train:
             self.training_file = os.path.join(self.root_dir, "train")
             self.file_list = os.listdir(self.training_file)
-
+            seed = 1
         else: 
             self.training_file = os.path.join(self.root_dir, "val")
             self.file_list = os.listdir(self.training_file)
-        
+            seed = 7
+
+        random.seed(seed)
+        random.shuffle(self.file_list)
+        random.seed()
+
         for img_path in self.file_list:
             if img_path.rsplit('.')[0] == 'dog':
                 self.label_list.append(1)

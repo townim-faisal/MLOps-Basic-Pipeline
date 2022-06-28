@@ -88,11 +88,28 @@ def model():
     
     model_task_id>>find_best_model_task_id
 
+# Test Pipeline
+@dag(
+    dag_id="model_test_pipeline",
+    start_date=datetime(2022, 1 ,1), 
+    schedule_interval=None, 
+    default_args=default_args,
+    catchup=False
+)
+def test():
+    model_dir = os.path.join(root_dir, 'dags', 'model_test')
 
+    model_task_id = BashOperator(
+        task_id="model_test",
+        bash_command=f"cd {model_dir} && python main.py"
+    )
+    
+    model_task_id
+    
 # Define DAGs
 data_dag = data()
 model_dag = model()
-
+test_dag = test()
 
 
 

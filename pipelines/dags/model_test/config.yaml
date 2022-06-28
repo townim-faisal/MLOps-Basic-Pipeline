@@ -1,9 +1,6 @@
-data_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/storage/data-warehouse/version 1"
 # paths and directories
-result_dir: '/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/results'
-train_dir: "./storage/train"
-valid_dir: "/storage/valid"
-test_dir: "/storage/test"
+data_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/storage/Lake/test"
+
 num_classes: 2
 class_names: ['cat', 'dog']
 image_height: 227

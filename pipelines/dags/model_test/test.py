@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorflow.keras.losses import SparseCategoricalCrossentropy 
 from tqdm import tqdm
 
-class Val:
+class Test:
     def __init__(self, testloader):
         self.testloader = testloader
 
@@ -30,9 +30,11 @@ class Val:
             # correct = 0
             # total = 0
             test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
-            bar = tqdm(enumerate(self.testloader), total=len(self.testloader), desc="Val: ")
+            bar = tqdm(enumerate(self.testloader), total=len(self.testloader), desc="Test: ")
             for batch_id, data in bar:
+                
                 inputs, labels = data[0], data[1]
+                
                 # outputs = model(inputs)
                 outputs, loss = self.loss(model, inputs, labels, training=False)
                 epoch_loss_avg.update_state(loss) 

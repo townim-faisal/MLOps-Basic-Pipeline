@@ -14,7 +14,7 @@ num_channels: 3
 ### inception -> 4.0.
 version: '1.0'
 # mlflow
-mlflow_experiment_name: 'Experiment 1'
-mlflow_run_name: ''
+mlflow_experiment_name: 'Alexnet'
+mlflow_run_name: 'Experiment 1'
 mlflow_tracking_uri: 'file:/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/mlruns'
 artifact_path: "/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/artifact"

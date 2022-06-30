@@ -4,17 +4,16 @@ lr: 0.01
 wd: 0.0005
 epochs: 1
 workers: 0
-model: 'alexnet'
+
 # networks
 # model = "cnn"
+# model: 'alexnet'
 # model = "resnet"
-# model = "inception"
+# model: "inceptionv1"
 
 
 optimizer_fn: "sgd"
 # optimizer_fn: "adam"
 # optimizer_fn: "rmsprop"
-
-learning_rate: 0.01
 decay_rate: 0.1
 momentum: 0.9

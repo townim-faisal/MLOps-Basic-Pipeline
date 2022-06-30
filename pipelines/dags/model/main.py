@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
-
 import os
 import yaml
 import sys
@@ -43,7 +42,7 @@ val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batc
 # get the original_dataset
 # train_dataset, valid_dataset = generate_train_dataset(train_data_config)
 # result_save_path = os.path.join(config.result_dir, config.model)
-
+inception = False
 print("Number of training samples = ",len(train_loader))
 print("Number of testing samples = ",len(val_loader))
 
@@ -53,8 +52,9 @@ elif hyp['model'] == "alexnet":
     model = AlexNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
 elif hyp['model'] == "resnet":
     model = ResNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
-else:
-    print('add inception')
+elif hyp['model'] == "inceptionv1":
+    model = models.InceptionNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'], num_filters=64, problem_type="Classification", dropout_rate=0.4)
+    inception = True
 
 learning_rate_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
 
@@ -65,8 +65,8 @@ elif hyp['optimizer_fn'] == 'adam':
 elif hyp['optimizer_fn'] == 'rmsprop':
     optimizer = tf.keras.optimizers.RMSprop(learning_rate=learning_rate_scheduler) #,momentum=hyp['momentum']
      
-trainer = Trainer(train_loader)
-val = Val(val_loader)
+trainer = Trainer(train_loader, inception=inception)
+val = Val(val_loader, inception=inception)
 training_log = {}
 
 

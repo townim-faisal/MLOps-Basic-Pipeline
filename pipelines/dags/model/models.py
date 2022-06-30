@@ -5,7 +5,7 @@ from tensorflow.keras import Model, Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.losses import categorical_crossentropy
-from tensorflow.keras.layers import Add,Dense, Flatten, Conv2D, MaxPooling2D, Dropout, BatchNormalization, Activation, AveragePooling2D,ZeroPadding2D
+from tensorflow.keras.layers import Add,Dense, Flatten, Conv2D, MaxPooling2D, Dropout, BatchNormalization, Activation, AveragePooling2D,ZeroPadding2D, GlobalAveragePooling2D, AveragePooling2D, GlobalMaxPooling2D, concatenate
 from tensorflow.keras import layers
 
 # AlexNet model
@@ -44,11 +44,11 @@ class AlexNet(Model):
     
         self.flatten1 = Flatten()
         self.dropout1 = Dropout(0.5)
-        self.fc1 = Dense(2048, activation= 'relu')
+        self.fc1 = Dense(4096, activation= 'relu')
         self.dropout2 = Dropout(0.5)
-        self.fc2 = Dense(2048, activation= 'relu')
-        self.fc3 = Dense(1000, activation= 'relu')
-        self.fc4 = Dense(num_classes, activation= 'softmax')
+        self.fc2 = Dense(4096, activation= 'relu')
+        # self.fc3 = Dense(1000, activation= 'relu')
+        self.fc3 = Dense(num_classes, activation= 'softmax')
         
     def call(self, input_tensor, training=False):
         
@@ -68,7 +68,7 @@ class AlexNet(Model):
         x = self.dropout2(x, training=training)
         x = self.fc2(x)
         x = self.fc3(x)
-        x = self.fc4(x)
+        # x = self.fc4(x)
     
         return x
 #cnn
@@ -333,3 +333,130 @@ class ResNet(Model):
         X = self.dense(X)
             
         return X
+# Inception net
+
+class Conv_2D_Block(layers.Layer):
+  def __init__(self, filters, kernel, input_shape, strides=(1, 1), padding="same", activation = "relu"):
+        super(Conv_2D_Block, self).__init__(name='conv_2D_block')
+        self.conv = Conv2D(filters, kernel, strides=strides, padding=padding, kernel_initializer="he_normal", input_shape=input_shape)
+        self.activation = Activation(activation)
+        
+  def call(self, inputs):
+        x = self.conv(inputs)
+        x = BatchNormalization()(x)
+        x = self.activation(x)
+        return x
+
+
+class Inceptionv1_Module(layers.Layer):
+  def __init__(self, filterB1, filterB2_1, filterB2_2, filterB3_1, filterB3_2, filterB4_2, i, input_shape):
+        super(Inceptionv1_Module, self).__init__(name=f'Inceptionv1_module_{i}')
+        self.branch1 = Conv_2D_Block(filterB1, (1, 1), input_shape, padding='valid')
+        self.branch2_1 = Conv_2D_Block(filterB2_1, (1, 1), input_shape, padding='valid')
+        self.branch2_2 = Conv_2D_Block(filterB2_2, (3, 3), input_shape)
+        self.branch3_1 = Conv_2D_Block(filterB3_1, (1, 1), input_shape, padding='valid')
+        self.branch3_2 = Conv_2D_Block(filterB3_2, (5, 5), input_shape)
+        self.branch4_1 = MaxPooling2D((3, 3), strides=(1, 1), padding='same')
+        self.branch4_2 = Conv_2D_Block(filterB4_2, (1, 1), input_shape) 
+        self.stage_no = i
+
+        
+  def call(self, inputs):
+        branch1 = self.branch1(inputs)
+        branch2 = self.branch2_1(inputs)
+        branch2 = self.branch2_2(branch2)
+        branch3 = self.branch3_1(inputs)
+        branch3 = self.branch3_2(branch3)
+        branch4 = self.branch4_1(inputs)
+        branch4 = self.branch4_2(branch4)
+
+        return concatenate([branch1, branch2, branch3, branch4], axis=-1)
+
+
+class MLP(layers.Layer):
+  def __init__(self, pooling, dropout_rate, problem_type, num_classes):
+        super(MLP, self).__init__(name='MLP')
+        self.pooling = GlobalAveragePooling2D() if pooling == 'avg' else GlobalMaxPooling2D()
+        self.dropout = Dropout(dropout_rate) if dropout_rate else False
+        self.output_layer = Dense(num_classes, activation = 'softmax' if problem_type == 'Classification' else 'linear')
+        
+  def call(self, inputs):
+        x = self.pooling(inputs)
+        # Final Dense Outputting Layer for the outputs
+        x = Flatten()(x)
+        if self.dropout:
+            x = self.dropout(x)
+        outputs = self.output_layer(x)
+        return outputs
+
+class Auxilliary_Module(layers.Layer):
+  def __init__(self, pooling, dropout_rate, problem_type, num_classes, i, input_shape):
+        super(Auxilliary_Module, self).__init__(name=f'Auxilliary_Module_{i}')
+        self.avgPooling = AveragePooling2D((5, 5), strides=(3, 3), padding='valid')
+        self.conv1x1 = Conv_2D_Block(64, (1, 1), input_shape)
+        self.MLP = MLP(pooling, dropout_rate, problem_type, num_classes)
+
+  def call(self, inputs):
+        aux_pool = self.avgPooling(inputs)
+        aux_conv = self.conv1x1(aux_pool)
+        aux_output = self.MLP(aux_conv)
+        return aux_output
+
+
+class InceptionNet(Model):
+  def __init__(self, input_shape, num_classes, num_filters, problem_type='Regression', pooling='avg', dropout_rate=False):
+        super(InceptionNet, self).__init__(name='InceptionNet')
+
+        # self.inputs = tf.keras.layers.Input(input_shape)
+        self.stem_conv7x7 = Conv_2D_Block(num_filters, (7, 7), input_shape, strides=(2, 2))
+        self.stem_maxPool_1 = MaxPooling2D((3, 3), strides=(2, 2))
+        self.stem_conv3x3 = Conv_2D_Block(num_filters*3, (3, 3), input_shape)
+        self.stem_conv1x1 = Conv_2D_Block(num_filters, (1, 1), input_shape, strides=(2, 2))
+        self.stem_maxPool_2 = MaxPooling2D((3, 3), strides=(2, 2))
+        self.inception_block_1 = Inceptionv1_Module(64, 96, 128, 16, 32, 32, 1, input_shape)
+        self.inception_block_2 = Inceptionv1_Module(128, 128, 192, 32, 96, 64, 2, input_shape)
+        self.inception_block_3 = Inceptionv1_Module(192, 96, 208, 16, 48, 64, 3, input_shape)
+        self.inception_block_4 = Inceptionv1_Module(160, 112, 224, 24, 64, 64, 4, input_shape)
+        self.inception_block_5 = Inceptionv1_Module(128, 128, 256, 24, 64, 64, 5, input_shape)
+        self.inception_block_6 = Inceptionv1_Module(112, 144, 288, 32, 64, 64, 6, input_shape)
+        self.inception_block_7 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 7, input_shape)
+        self.inception_block_8 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 8, input_shape)
+        self.inception_block_9 = Inceptionv1_Module(384, 192, 384, 48, 128, 128, 9, input_shape)
+        self.maxPool1 = MaxPooling2D((3, 3), strides=(2, 2))
+        self.maxPool2 = MaxPooling2D((3, 3), strides=(2, 2))
+        self.auxiliary_output_1 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 1, input_shape)
+        self.auxiliary_output_2 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 2, input_shape)
+        self.final_output = MLP(pooling, dropout_rate, problem_type, num_classes)
+        
+
+  def call(self, X):
+        # inputs = self.inputs(X)
+        # Stem
+        x = self.stem_conv7x7(X)
+        x = self.stem_maxPool_1(x)
+        x = self.stem_conv3x3(x)
+        x = self.stem_conv1x1(x)
+        x = self.stem_maxPool_2(x)
+        # Inception Blocks
+        x = self.inception_block_1(x)  # Inception Block 1
+        x = self.inception_block_2(x)  # Inception Block 2
+
+        aux_output_0 = self.auxiliary_output_1(x)
+
+        x = self.maxPool1(x)
+        x = self.inception_block_3(x)  # Inception Block 3
+        x = self.inception_block_4(x)  # Inception Block 4
+        x = self.inception_block_5(x)  # Inception Block 5
+        x = self.inception_block_6(x)  # Inception Block 6
+        x = self.inception_block_7(x)  # Inception Block 7
+
+        aux_output_1 = self.auxiliary_output_2(x)
+
+        x = self.maxPool2(x)
+        x = self.inception_block_8(x)  # Inception Block 8
+        x = self.inception_block_9(x)  # Inception Block 9
+
+        # Final Dense MLP Layer for the outputs
+        final_output = self.final_output(x)
+        # model = Model(inputs, outputs=[final_output, aux_output_0, aux_output_1], name='Inception_v1')
+        return final_output, aux_output_0, aux_output_1

@@ -1,12 +1,43 @@
 from tensorflow.keras.utils import Sequence
 from skimage.io import imread
 from skimage.transform import resize
-import cv2
-from augment import transform_train, transform_val
 import os
 import numpy as np
 import math
-import random
+
+# class CustomDataset(Dataset):
+#     def __init__(self, root_dir, train=True, transform=None):
+#         super(CustomDataset, self).__init__()
+#         self.root_dir = root_dir 
+#         self.transform = transform
+        
+#         if train:
+#             self.training_file = os.path.join(self.root_dir, "train")
+#             self.file_list = os.listdir(self.training_file)
+#         else: 
+#             self.training_file = os.path.join(self.root_dir, "val")
+#             self.file_list = os.listdir(self.training_file)
+        
+#         self.transform = transform
+        
+        
+#     #dataset length
+#     def __len__(self):
+#         return len(self.file_list)
+    
+#     #load an one of images
+#     def __getitem__(self,idx):
+#         img_path =  self.file_list[idx]
+#         img = Image.open(os.path.join(self.training_file, img_path))
+#         img_transformed = self.transform(img)
+#         label = img_path.rsplit('.')[0]
+        
+#         if label == 'dog':
+#             label=1
+#         elif label == 'cat':
+#             label=0
+            
+#         return img_transformed, label
 
 class CustomDataset(Sequence):
     
@@ -19,20 +50,15 @@ class CustomDataset(Sequence):
         if train:
             self.training_file = os.path.join(self.root_dir, "train")
             self.file_list = os.listdir(self.training_file)
-            seed = 1
+
         else: 
             self.training_file = os.path.join(self.root_dir, "val")
             self.file_list = os.listdir(self.training_file)
-            seed = 7
-
-        random.seed(seed)
-        random.shuffle(self.file_list)
-        random.seed()
-
+        
         for img_path in self.file_list:
             if img_path.rsplit('.')[0] == 'dog':
                 self.label_list.append(1)
-            elif img_path.rsplit('.')[0] == 'cat':
+            else:
                 self.label_list.append(0)
 
         self.transform = transform
@@ -47,5 +73,5 @@ class CustomDataset(Sequence):
         self.batch_size]
 
         return np.array([
-            self.transform(image=cv2.imread(os.path.join(self.training_file, file_name)))['image']/255.0
+            resize(imread(os.path.join(self.training_file, file_name)), (227, 227))
                for file_name in batch_x]), np.array(batch_y)

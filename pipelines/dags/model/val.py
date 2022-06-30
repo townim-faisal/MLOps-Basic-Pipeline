@@ -10,13 +10,18 @@ from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tqdm import tqdm
 
 class Val:
-    def __init__(self, testloader):
+    def __init__(self, testloader, inception=False):
         self.testloader = testloader
+        self.inception = inception
 
     def loss(self, model, x, y, training):
         # training=training is needed only if there are layers with different
         # behavior during training versus inference (e.g. Dropout).
-        y_ = model(x, training=training)
+        if self.inception:
+            y_, _, _ = model(x, training=training)
+        else:
+            y_ = model(x, training=training)
+            
         loss_object = SparseCategoricalCrossentropy(from_logits=False)
 
         return y_, loss_object(y_true=y, y_pred=y_)

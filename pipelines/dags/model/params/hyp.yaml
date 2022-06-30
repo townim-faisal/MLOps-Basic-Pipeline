@@ -4,11 +4,11 @@ lr: 0.01
 wd: 0.0005
 epochs: 1
 workers: 0
-model: 'alexnet'
+# model: 'alexnet'
 # networks
 # model = "cnn"
 # model = "resnet"
-# model = "inception"
+model: "inceptionv1"
 
 
 optimizer_fn: "sgd"

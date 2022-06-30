@@ -4,10 +4,12 @@ from tensorflow.keras import layers
 import albumentations as A
 
 transform_train = A.Compose([
+    A.Resize(227,227, always_apply=True),
     A.RandomCrop(width=224, height=224),
     A.HorizontalFlip(p=0.5),
     A.FancyPCA(alpha=0.1, always_apply=False, p=0.5),
-    A.Resize(227,227, always_apply=True)
+    A.Resize(227,227, always_apply=True),
+    A.ToFloat(max_value=65535.0)
 ])
 
 # transform_train  = tf.keras.Sequential([

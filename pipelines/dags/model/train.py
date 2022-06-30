@@ -10,10 +10,10 @@ import logging
 from tensorflow.keras.losses import SparseCategoricalCrossentropy 
 
 class Trainer:
-    def __init__(self, train_loader):
+    def __init__(self, train_loader, inception=False):
         # self.device = device
         self.train_loader = train_loader
-
+        self.inception = inception
         # l = loss(model, features, labels, training=False)
         # print("Loss test: {}".format(l))
     def grad(self, model, inputs, targets):
@@ -24,7 +24,11 @@ class Trainer:
     def loss(self, model, x, y, training):
         # training=training is needed only if there are layers with different
         # behavior during training versus inference (e.g. Dropout).
-        y_ = model(x, training=training)
+        if self.inception:
+            y_, _, _ = model(x, training=training)
+        else:
+            y_ = model(x, training=training)
+
         loss_object = SparseCategoricalCrossentropy(from_logits=False)
 
         return loss_object(y_true=y, y_pred=y_)

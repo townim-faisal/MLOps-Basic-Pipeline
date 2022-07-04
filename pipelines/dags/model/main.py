@@ -43,6 +43,8 @@ val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batc
 # train_dataset, valid_dataset = generate_train_dataset(train_data_config)
 # result_save_path = os.path.join(config.result_dir, config.model)
 inception = False
+if 'inception' in hyp['model']:
+    inception = True
 print("Number of training samples = ",len(train_loader))
 print("Number of testing samples = ",len(val_loader))
 
@@ -54,7 +56,12 @@ elif hyp['model'] == "resnet":
     model = ResNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
 elif hyp['model'] == "inceptionv1":
     model = models.InceptionNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'], num_filters=64, problem_type="Classification", dropout_rate=0.4)
-    inception = True
+elif hyp['model'] == "inceptionv2":
+    model = models.Inception(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_filters=32, problem_type="Classification", output_nums=config['num_classes'], pooling='avg', dropout_rate=False, auxilliary_outputs=False).Inception_v2()
+elif hyp['model'] == "inceptionv3":
+    model = models.Inception(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_filters=64, problem_type="Classification", output_nums=config['num_classes'], pooling='avg', dropout_rate=False, auxilliary_outputs=False).Inception_v3()
+elif hyp['model'] == "inceptionv4":
+    model = models.Inception(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_filters=64, problem_type="Classification", output_nums=config['num_classes'], pooling='avg', dropout_rate=False, auxilliary_outputs=False).Inception_v4()
 
 learning_rate_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
 
